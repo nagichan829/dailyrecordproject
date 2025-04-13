@@ -1,0 +1,28 @@
+.react-calendar {
+    background-color: #1f2937; /* Tailwindのbg-gray-800 相当 */
+    color: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid white;
+  }
+  
+  .react-calendar__tile {
+    background: transparent;
+    border-radius: 0.5rem;
+  }
+  
+  .react-calendar__tile--now {
+    background: #374151 !important; /* 今日の背景（gray-700） */
+    color: white !important;
+  }
+  
+  .react-calendar__tile--active {
+    background: white !important;
+    color: #1f2937 !important;
+  }
+  
+  /* 土曜日だけ青く */
+  .react-calendar__month-view__days__day--6 {
+    color: #60a5fa; /* blue-400 */
+  }
+  
