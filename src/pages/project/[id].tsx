@@ -65,7 +65,7 @@ export default function ProjectPage() {
       await navigator.clipboard.writeText(url);
       setCopyStatus("✅ リンクをコピーしました！");
       setTimeout(() => setCopyStatus(""), 2000);
-    } catch (err) {
+    } catch (_err) {
       setCopyStatus("⚠️ コピーに失敗しました");
     }
   };
