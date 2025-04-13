@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import dayjs from "dayjs";
 import { Geist, Geist_Mono } from "next/font/google";
-
+import type { CalendarProps } from "react-calendar";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -22,8 +25,8 @@ export default function ProjectPage() {
   const [completions, setCompletions] = useState<string[]>([]);
   const [status, setStatus] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
+  const [value, setValue] = useState<Date | null>(new Date());
 
-  // Firestoreからデータを取得
   useEffect(() => {
     if (!projectId || typeof projectId !== "string") return;
 
@@ -43,12 +46,10 @@ export default function ProjectPage() {
     fetchProject();
   }, [projectId]);
 
-  // 今日を完了として登録
   const markTodayComplete = async () => {
     if (!projectId || typeof projectId !== "string") return;
 
-    const today = new Date().toISOString().split("T")[0];
-
+    const today = dayjs().format("YYYY-MM-DD");
     const ref = doc(db, "projects", projectId);
     await updateDoc(ref, {
       completions: arrayUnion(today),
@@ -58,7 +59,6 @@ export default function ProjectPage() {
     setStatus("✅ 完了を記録しました！");
   };
 
-  // URLをコピー
   const copyLinkToClipboard = async () => {
     const url = window.location.href;
     try {
@@ -69,6 +69,19 @@ export default function ProjectPage() {
       setCopyStatus("⚠️ コピーに失敗しました");
     }
   };
+
+ 
+
+const handleCalendarChange: CalendarProps["onChange"] = (val) => {
+  if (val instanceof Date) {
+    setValue(val);
+  } else if (Array.isArray(val)) {
+    setValue(val[0]);
+  } else {
+    setValue(null);
+  }
+};
+
 
   return (
     <div
@@ -91,19 +104,24 @@ export default function ProjectPage() {
           共有リンクをコピー
         </button>
 
-        {copyStatus && <p className="text-sm mt-1">{copyStatus}</p>}
+        {copyStatus && <p className="text-sm">{copyStatus}</p>}
 
-        <h2 className="text-xl font-medium mt-6">完了した日</h2>
-        <ul className="text-sm">
-          {completions.length === 0 ? (
-            <li>まだ記録がありません</li>
-          ) : (
-            completions.map((date) => <li key={date}>✅ {date}</li>)
-          )}
-        </ul>
+        <h2 className="text-xl font-medium mt-6">📅 カレンダー</h2>
+        <div className="w-full">
+          <Calendar
+            onChange={handleCalendarChange}
+            value={value}
+            selectRange={false}
+            tileClassName={({ date }) => {
+              const dateStr = dayjs(date).format("YYYY-MM-DD");
+              return completions.includes(dateStr) ? "bg-green-200 font-bold rounded" : "";
+            }}
+          />
+        </div>
 
         {status && <p className="text-sm mt-4">{status}</p>}
       </main>
     </div>
   );
 }
+
