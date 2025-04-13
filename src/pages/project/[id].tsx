@@ -7,6 +7,8 @@ import "react-calendar/dist/Calendar.css";
 import dayjs from "dayjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import type { CalendarProps } from "react-calendar";
+import "../../styles/calendar.css";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
